@@ -6,6 +6,7 @@ import Suscripciones from "../pages/Suscripciones";
 import Usuarios from "../pages/Usuarios";
 import Audit from "../pages/Audit";
 import Profesionales from "../pages/Profesionales";
+import Centros from "../pages/Centros";
 
 function Layout({ children }) {
   const { logout } = useAuth();
@@ -35,6 +36,7 @@ function Layout({ children }) {
           <NavLink to="/suscripciones"  style={navStyle}>🔔 Suscripciones</NavLink>
           <NavLink to="/usuarios"       style={navStyle}>👥 Usuarios</NavLink>
           <NavLink to="/profesionales"  style={navStyle}>🩺 Profesionales</NavLink>
+          <NavLink to="/centros"        style={navStyle}>🏥 Centros</NavLink>
           <NavLink to="/audit"          style={navStyle}>📋 Audit Log</NavLink>
         </nav>
 
