@@ -196,12 +196,29 @@ export default function Suscripciones() {
   const [modalNueva,    setModalNueva]    = useState(false);
   const [modalDesc,     setModalDesc]     = useState(null);
   const [cobrando,      setCobrando]      = useState(null);
+  const [confirmBorrar, setConfirmBorrar] = useState(null);
+  const [borrando,      setBorrando]      = useState(null);
   const [error,         setError]         = useState(null);
   const [success,       setSuccess]       = useState(null);
 
   const headers = { "X-Superadmin-Key": apiKey };
 
   useEffect(() => { cargar(); }, []);
+
+  async function handleBorrar(s) {
+    setBorrando(s.centro_id);
+    try {
+      const res = await fetch(`${API_URL}/api/superadmin/suscripciones/${s.centro_id}`, {
+        method: "DELETE", headers
+      });
+      if (!res.ok) throw new Error((await res.json()).detail || "Error");
+      setConfirmBorrar(null);
+      setSuccess(`✅ Suscripción ${s.nombre_centro} eliminada`);
+      setTimeout(() => setSuccess(null), 2000);
+      cargar();
+    } catch (e) { setError(e.message); }
+    finally { setBorrando(null); }
+  }
 
   async function cargar() {
     setLoading(true);
@@ -290,12 +307,37 @@ export default function Suscripciones() {
                 onClick={() => setModalDesc(s)}>
                 🏷️ Descuento
               </button>
+              <button style={{ fontSize: 12, padding: "6px 12px", background: "#fef2f2",
+                color: "#dc2626", border: "1px solid #fecaca", borderRadius: 8, fontWeight: 600 }}
+                onClick={() => setConfirmBorrar(s)}>
+                🗑 Borrar
+              </button>
             </div>
           </div>
         );
       })}
 
       {modalNueva && <ModalNueva onClose={() => setModalNueva(false)} onCreada={cargar} apiKey={apiKey} />}
+      {confirmBorrar && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 300, padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 360, width: "100%" }}>
+            <p style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>¿Eliminar suscripción?</p>
+            <p style={{ fontSize: 13, color: "#64748b", marginBottom: 20 }}>
+              Se eliminará la suscripción de <strong>{confirmBorrar.nombre_centro}</strong>.<br/>
+              Esta acción no se puede deshacer.
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmBorrar(null)}>Cancelar</button>
+              <button style={{ flex: 1, background: "#dc2626", color: "#fff", border: "none",
+                borderRadius: 10, padding: "10px 16px", fontSize: 13, fontWeight: 700 }}
+                onClick={() => handleBorrar(confirmBorrar)} disabled={!!borrando}>
+                {borrando ? "…" : "Sí, eliminar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {modalDesc  && <ModalDescuento suscripcion={modalDesc} onClose={() => setModalDesc(null)} onGuardado={cargar} apiKey={apiKey} />}
     </div>
   );
@@ -319,4 +361,4 @@ const styles = {
   error:   { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: "10px 12px", borderRadius: 10, fontSize: 13, marginBottom: 12 },
   success: { background: "#f0fdf4", border: "1px solid #86efac", color: "#166534", padding: "10px 12px", borderRadius: 10, fontSize: 13, marginBottom: 12 },
 };
-          
+        
