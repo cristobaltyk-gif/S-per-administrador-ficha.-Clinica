@@ -262,7 +262,7 @@ function ModalEditar({ suscripcion, onClose, onGuardado, apiKey }) {
 }
 
 
-function ModalEdicion({ suscripcion, onClose, onGuardado, apiKey }) {
+ function ModalEdicion({ suscripcion, onClose, onGuardado, apiKey }) {
   const PRECIOS_ROL = { medico: 30000, kine: 25000, psicologo: 30000, secretaria: 20000, admin: 20000 };
   const ROLES = ["medico", "kine", "psicologo", "secretaria", "admin"];
 
@@ -373,4 +373,184 @@ function ModalEdicion({ suscripcion, onClose, onGuardado, apiKey }) {
   );
 }
 
-exp
+export default function Suscripciones() {
+  const { apiKey } = useAuth();
+  const [suscripciones, setSuscripciones] = useState([]);
+  const [loading,       setLoading]       = useState(true);
+  const [modalNueva,    setModalNueva]    = useState(false);
+  const [modalDesc,     setModalDesc]     = useState(null);
+  const [cobrando,      setCobrando]      = useState(null);
+  const [confirmBorrar, setConfirmBorrar] = useState(null);
+  const [modalEditar,   setModalEditar]   = useState(null);
+  const [modalEdicion,  setModalEdicion]  = useState(null);
+  const [borrando,      setBorrando]      = useState(null);
+  const [error,         setError]         = useState(null);
+  const [success,       setSuccess]       = useState(null);
+
+  const headers = { "X-Superadmin-Key": apiKey };
+
+  useEffect(() => { cargar(); }, []);
+
+  async function handleBorrar(s) {
+    setBorrando(s.centro_id);
+    try {
+      const res = await fetch(`${API_URL}/api/superadmin/suscripciones/${s.centro_id}`, {
+        method: "DELETE", headers
+      });
+      if (!res.ok) throw new Error((await res.json()).detail || "Error");
+      setConfirmBorrar(null);
+      setSuccess(`✅ Suscripción ${s.nombre_centro} eliminada`);
+      setTimeout(() => setSuccess(null), 2000);
+      cargar();
+    } catch (e) { setError(e.message); }
+    finally { setBorrando(null); }
+  }
+
+  async function cargar() {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/superadmin/suscripciones`, { headers });
+      setSuscripciones(res.ok ? await res.json() : []);
+    } catch { setSuscripciones([]); }
+    finally { setLoading(false); }
+  }
+
+  async function handleCobrar(s) {
+    setCobrando(s.centro_id); setError(null); setSuccess(null);
+    try {
+      const res = await fetch(`${API_URL}/api/superadmin/suscripciones/${s.centro_id}/cobrar`,
+        { method: "POST", headers });
+      const data = await res.json();
+      if (data.link_pago) {
+        navigator.clipboard.writeText(data.link_pago).catch(() => {});
+        setSuccess(`Link copiado para ${s.nombre_centro}`);
+      } else {
+        setSuccess(`Cobro enviado a ${s.nombre_centro}`);
+      }
+      await cargar();
+    } catch { setError("Error al cobrar"); }
+    finally { setCobrando(null); }
+  }
+
+  const activas  = suscripciones.filter(s => s.estado === "activo").length;
+  const vencidas = suscripciones.filter(s => s.estado === "vencido").length;
+  const mrr      = suscripciones.filter(s => s.estado === "activo").reduce((a, s) => a + (s.precio_final || 0), 0);
+
+  return (
+    <div className="page">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <div>
+          <h1 className="page-title">Suscripciones</h1>
+          <p className="page-sub">MRR: <strong>{fmt(mrr)}/mes</strong></p>
+        </div>
+        <button className="btn-primary" onClick={() => setModalNueva(true)}>+ Nueva</button>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+        {[
+          { label: "Activas",  value: activas,  color: "#16a34a" },
+          { label: "Vencidas", value: vencidas, color: "#dc2626" },
+          { label: "MRR",      value: fmt(mrr), color: "#1e3a8a" },
+        ].map(k => (
+          <div key={k.label} className="card" style={{ textAlign: "center", padding: "12px 8px" }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: k.color }}>{k.value}</div>
+            <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600 }}>{k.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {error   && <div className="error-box">{error}</div>}
+      {success && <div className="success-box">{success}</div>}
+
+      {loading ? <p style={{ color: "#94a3b8" }}>Cargando…</p> : suscripciones.length === 0 ? (
+        <p style={{ color: "#94a3b8", textAlign: "center", padding: 40 }}>Sin suscripciones</p>
+      ) : suscripciones.map(s => {
+        const dias = s.fecha_vencimiento
+          ? Math.ceil((new Date(s.fecha_vencimiento) - new Date()) / 86400000)
+          : null;
+        return (
+          <div key={s.centro_id} className="card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700 }}>{s.nombre_centro}</div>
+                <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                  {s.plan} · {s.metodo_pago === "automatico" ? "🔄 Auto" : "📧 Manual"}
+                </div>
+              </div>
+              {estadoBadge(s.estado)}
+            </div>
+            <div style={{ fontSize: 13, color: "#475569", marginBottom: 10 }}>
+              💰 {fmt(s.precio_final)}/mes
+              {s.descuento_pct > 0 && <span style={{ color: "#16a34a", marginLeft: 8 }}>({s.descuento_pct}% dto)</span>}
+              {dias !== null && <span style={{ marginLeft: 12, color: dias <= 3 ? "#dc2626" : "#475569" }}>📅 {dias} días</span>}
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn-secondary" style={{ fontSize: 12, padding: "6px 12px" }}
+                onClick={() => handleCobrar(s)} disabled={cobrando === s.centro_id}>
+                {cobrando === s.centro_id ? "…" : "💳 Cobrar"}
+              </button>
+              <button className="btn-secondary" style={{ fontSize: 12, padding: "6px 12px" }}
+                onClick={() => setModalDesc(s)}>
+                🏷️ Descuento
+              </button>
+              <button className="btn-secondary" style={{ fontSize: 12, padding: "6px 12px" }}
+                onClick={() => setModalEdicion(s)}>
+                ✏️ Editar
+              </button>
+              <button style={{ fontSize: 12, padding: "6px 12px", background: "#fef2f2",
+                color: "#dc2626", border: "1px solid #fecaca", borderRadius: 8, fontWeight: 600 }}
+                onClick={() => setConfirmBorrar(s)}>
+                🗑 Borrar
+              </button>
+            </div>
+          </div>
+        );
+      })}
+
+      {modalNueva && <ModalNueva onClose={() => setModalNueva(false)} onCreada={cargar} apiKey={apiKey} />}
+      {confirmBorrar && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 300, padding: 16 }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 360, width: "100%" }}>
+            <p style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>¿Eliminar suscripción?</p>
+            <p style={{ fontSize: 13, color: "#64748b", marginBottom: 20 }}>
+              Se eliminará la suscripción de <strong>{confirmBorrar.nombre_centro}</strong>.<br/>
+              Esta acción no se puede deshacer.
+            </p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmBorrar(null)}>Cancelar</button>
+              <button style={{ flex: 1, background: "#dc2626", color: "#fff", border: "none",
+                borderRadius: 10, padding: "10px 16px", fontSize: 13, fontWeight: 700 }}
+                onClick={() => handleBorrar(confirmBorrar)} disabled={!!borrando}>
+                {borrando ? "…" : "Sí, eliminar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {modalEdicion && <ModalEdicion suscripcion={modalEdicion} onClose={() => setModalEdicion(null)} onGuardado={cargar} apiKey={apiKey} />}
+      {modalEditar && <ModalEditar suscripcion={modalEditar} onClose={() => setModalEditar(null)} onGuardado={cargar} apiKey={apiKey} />}
+      {modalDesc  && <ModalDescuento suscripcion={modalDesc} onClose={() => setModalDesc(null)} onGuardado={cargar} apiKey={apiKey} />}
+    </div>
+  );
+}
+
+function Field({ label, children }) {
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <p style={{ margin: "0 0 4px", fontSize: 12, fontWeight: 600, color: "#475569" }}>{label}</p>
+      {children}
+    </div>
+  );
+}
+
+const styles = {
+  overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 300, padding: 16, overflowY: "auto" },
+  modal: { background: "#fff", borderRadius: 16, padding: 24, width: "100%", maxWidth: 420, boxShadow: "0 20px 60px rgba(0,0,0,0.2)", maxHeight: "90vh", overflowY: "auto" },
+  input: { width: "100%", padding: "9px 12px", borderRadius: 8, border: "1px solid #e2e8f0", fontSize: 13, boxSizing: "border-box", outline: "none", color: "#0f172a" },
+  btnPrimary: { background: "#1e3a8a", color: "#fff", border: "none", borderRadius: 10, padding: "10px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer" },
+  btnSecondary: { background: "#fff", color: "#0f172a", border: "1px solid #e2e8f0", borderRadius: 10, padding: "10px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" },
+  error:   { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: "10px 12px", borderRadius: 10, fontSize: 13, marginBottom: 12 },
+  success: { background: "#f0fdf4", border: "1px solid #86efac", color: "#166534", padding: "10px 12px", borderRadius: 10, fontSize: 13, marginBottom: 12 },
+};
+                           
