@@ -116,7 +116,7 @@ export default function Centros() {
               <div>
                 <div style={{ fontSize: 15, fontWeight: 700 }}>{c.nombre}</div>
                 <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>
-                  {c.id} · {c.total_usuarios} usuarios · {fmt(c.precio_base)}/mes
+                  {c.id} · {c.total_usuarios} usuarios
                 </div>
               </div>
               <span style={{
@@ -258,5 +258,5 @@ export default function Centros() {
       )}
     </div>
   );
-    }
-                        
+      }
+                       
