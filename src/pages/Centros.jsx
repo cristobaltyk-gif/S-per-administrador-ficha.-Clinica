@@ -228,7 +228,7 @@ export default function Centros() {
                 onClick={() => handleToggleActivo(seleccionado)}>
                 {seleccionado.activo ? "Desactivar" : "Activar"}
               </button>
-              <button className="btn-danger" style={{ fontSize: 12 }}
+              <button style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 10, padding: "10px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }} style={{ fontSize: 12 }}
                 onClick={() => setConfirm(seleccionado)}>
                 🗑 Eliminar centro
               </button>
@@ -251,12 +251,11 @@ export default function Centros() {
             </p>
             <div style={{ display: "flex", gap: 8 }}>
               <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setConfirm(null)}>Cancelar</button>
-              <button className="btn-danger" style={{ flex: 1 }} onClick={() => handleBorrar(confirm)}>Sí, eliminar</button>
+              <button style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 10, padding: "10px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }} style={{ flex: 1 }} onClick={() => handleBorrar(confirm)}>Sí, eliminar</button>
             </div>
           </div>
         </div>
       )}
     </div>
   );
-      }
-                       
+}
