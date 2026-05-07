@@ -262,13 +262,13 @@ function ModalEditar({ suscripcion, onClose, onGuardado, apiKey }) {
 }
 
 
- function ModalEdicion({ suscripcion, onClose, onGuardado, apiKey }) {
+function ModalEdicion({ suscripcion, onClose, onGuardado, apiKey }) {
   const PRECIOS_ROL = { medico: 30000, kine: 25000, psicologo: 30000, secretaria: 20000, admin: 20000 };
   const ROLES = ["medico", "kine", "psicologo", "secretaria", "admin"];
 
   const [roles,        setRoles]        = useState(suscripcion.roles || {});
   const [descPct,      setDescPct]      = useState(suscripcion.descuento_pct || 0);
-  const [descMotivo,   setDescMotivo]   = useState(suscripcion.descuento_motivo || "");
+    const [descMotivo,   setDescMotivo]   = useState(suscripcion.descuento_motivo || "");
   const [descHasta,    setDescHasta]    = useState(suscripcion.descuento_hasta || "");
   const [vencimiento,  setVencimiento]  = useState(suscripcion.fecha_vencimiento || "");
   const [email,        setEmail]        = useState(suscripcion.email_contacto || "");
@@ -553,4 +553,3 @@ const styles = {
   error:   { background: "#fef2f2", border: "1px solid #fecaca", color: "#991b1b", padding: "10px 12px", borderRadius: 10, fontSize: 13, marginBottom: 12 },
   success: { background: "#f0fdf4", border: "1px solid #86efac", color: "#166534", padding: "10px 12px", borderRadius: 10, fontSize: 13, marginBottom: 12 },
 };
-                           
