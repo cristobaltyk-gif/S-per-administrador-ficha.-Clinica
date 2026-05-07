@@ -7,6 +7,7 @@ import Usuarios from "../pages/Usuarios";
 import Audit from "../pages/Audit";
 import Profesionales from "../pages/Profesionales";
 import Centros from "../pages/Centros";
+import Externos from "../pages/Externos";
 
 function Layout({ children }) {
   const { logout } = useAuth();
@@ -20,7 +21,6 @@ function Layout({ children }) {
 
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
-      {/* Sidebar */}
       <aside style={{
         width: 220, background: "#0f172a", padding: "24px 12px",
         display: "flex", flexDirection: "column", flexShrink: 0,
@@ -32,16 +32,16 @@ function Layout({ children }) {
         </div>
 
         <nav style={{ flex: 1 }}>
-          <NavLink to="/dashboard"      style={navStyle}>📊 Dashboard</NavLink>
-          <NavLink to="/suscripciones"  style={navStyle}>🔔 Suscripciones</NavLink>
-          <NavLink to="/usuarios"       style={navStyle}>👥 Usuarios</NavLink>
-          <NavLink to="/profesionales"  style={navStyle}>🩺 Profesionales</NavLink>
-          <NavLink to="/centros"        style={navStyle}>🏥 Centros</NavLink>
-          <NavLink to="/audit"          style={navStyle}>📋 Audit Log</NavLink>
+          <NavLink to="/dashboard"     style={navStyle}>📊 Dashboard</NavLink>
+          <NavLink to="/suscripciones" style={navStyle}>🔔 Suscripciones</NavLink>
+          <NavLink to="/centros"       style={navStyle}>🏥 Centros</NavLink>
+          <NavLink to="/externos"      style={navStyle}>👤 Externos</NavLink>
+          <NavLink to="/usuarios"      style={navStyle}>👥 Usuarios</NavLink>
+          <NavLink to="/profesionales" style={navStyle}>🩺 Profesionales</NavLink>
+          <NavLink to="/audit"         style={navStyle}>📋 Audit Log</NavLink>
         </nav>
 
-        <button
-          onClick={logout}
+        <button onClick={logout}
           style={{ background: "#1e293b", color: "#94a3b8", border: "none",
             borderRadius: 10, padding: "10px 16px", fontSize: 13,
             fontWeight: 600, textAlign: "left", cursor: "pointer" }}>
@@ -49,7 +49,6 @@ function Layout({ children }) {
         </button>
       </aside>
 
-      {/* Main */}
       <main style={{ marginLeft: 220, flex: 1, minHeight: "100vh" }}>
         {children}
       </main>
@@ -68,9 +67,11 @@ export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} />
+        <Route path="/login"         element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} />
         <Route path="/dashboard"     element={<Guard><Dashboard /></Guard>} />
         <Route path="/suscripciones" element={<Guard><Suscripciones /></Guard>} />
+        <Route path="/centros"       element={<Guard><Centros /></Guard>} />
+        <Route path="/externos"      element={<Guard><Externos /></Guard>} />
         <Route path="/usuarios"      element={<Guard><Usuarios /></Guard>} />
         <Route path="/profesionales" element={<Guard><Profesionales /></Guard>} />
         <Route path="/audit"         element={<Guard><Audit /></Guard>} />
