@@ -6,7 +6,6 @@ import Suscripciones from "../pages/Suscripciones";
 import Usuarios from "../pages/Usuarios";
 import Audit from "../pages/Audit";
 import Profesionales from "../pages/Profesionales";
-import Centros from "../pages/Centros";
 import Externos from "../pages/Externos";
 
 function Layout({ children }) {
@@ -34,7 +33,6 @@ function Layout({ children }) {
         <nav style={{ flex: 1 }}>
           <NavLink to="/dashboard"     style={navStyle}>📊 Dashboard</NavLink>
           <NavLink to="/suscripciones" style={navStyle}>🔔 Suscripciones</NavLink>
-          <NavLink to="/centros"       style={navStyle}>🏥 Centros</NavLink>
           <NavLink to="/externos"      style={navStyle}>👤 Externos</NavLink>
           <NavLink to="/usuarios"      style={navStyle}>👥 Usuarios</NavLink>
           <NavLink to="/profesionales" style={navStyle}>🩺 Profesionales</NavLink>
@@ -70,7 +68,6 @@ export default function AppRouter() {
         <Route path="/login"         element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} />
         <Route path="/dashboard"     element={<Guard><Dashboard /></Guard>} />
         <Route path="/suscripciones" element={<Guard><Suscripciones /></Guard>} />
-        <Route path="/centros"       element={<Guard><Centros /></Guard>} />
         <Route path="/externos"      element={<Guard><Externos /></Guard>} />
         <Route path="/usuarios"      element={<Guard><Usuarios /></Guard>} />
         <Route path="/profesionales" element={<Guard><Profesionales /></Guard>} />
