@@ -273,7 +273,6 @@ export default function Externos() {
     try {
       await fetch(`${API_URL}/api/superadmin/suscripciones/${s.centro_id}`, { method: "DELETE", headers });
       await fetch(`${API_URL}/professionals/${s.centro_id}`, { method: "DELETE" }).catch(() => {});
-      await fetch(`${API_URL}/admin/users/${s.centro_id}`,   { method: "DELETE" }).catch(() => {});
       setConfirmBorrar(null);
       setSuccess(`✅ ${s.nombre_centro} eliminado`);
       setTimeout(() => setSuccess(null), 2000);
@@ -341,4 +340,4 @@ export default function Externos() {
       )}
     </div>
   );
-          }
+      }
