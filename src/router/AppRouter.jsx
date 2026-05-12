@@ -8,6 +8,31 @@ import Audit from "../pages/Audit";
 import Profesionales from "../pages/Profesionales";
 import Externos from "../pages/Externos";
 
+function PagoExitoso() {
+  return (
+    <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex",
+      alignItems: "center", justifyContent: "center", padding: 24 }}>
+      <div style={{ background: "#fff", borderRadius: 20, padding: 40, maxWidth: 420,
+        width: "100%", textAlign: "center", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
+        <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
+        <h2 style={{ margin: "0 0 8px", color: "#166534", fontSize: 22, fontWeight: 800 }}>
+          ¡Pago confirmado!
+        </h2>
+        <p style={{ color: "#475569", fontSize: 14, marginBottom: 24 }}>
+          Tu suscripción ha sido activada. Recibirás un correo con tus credenciales de acceso al sistema clínico.
+        </p>
+        <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 12,
+          padding: "14px 20px", marginBottom: 24, fontSize: 13, color: "#166534" }}>
+          Revisa tu bandeja de entrada en <strong>clinica.icarticular.cl</strong>
+        </div>
+        <p style={{ fontSize: 12, color: "#94a3b8" }}>
+          ¿Tienes dudas? Escríbenos a contacto@icarticular.cl
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function Layout({ children }) {
   const { logout } = useAuth();
   const navStyle = ({ isActive }) => ({
@@ -29,7 +54,6 @@ function Layout({ children }) {
           <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>🏥 ICA</div>
           <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>Superadmin</div>
         </div>
-
         <nav style={{ flex: 1 }}>
           <NavLink to="/dashboard"     style={navStyle}>📊 Dashboard</NavLink>
           <NavLink to="/suscripciones" style={navStyle}>🔔 Suscripciones</NavLink>
@@ -38,7 +62,6 @@ function Layout({ children }) {
           <NavLink to="/profesionales" style={navStyle}>🩺 Profesionales</NavLink>
           <NavLink to="/audit"         style={navStyle}>📋 Audit Log</NavLink>
         </nav>
-
         <button onClick={logout}
           style={{ background: "#1e293b", color: "#94a3b8", border: "none",
             borderRadius: 10, padding: "10px 16px", fontSize: 13,
@@ -46,7 +69,6 @@ function Layout({ children }) {
           ← Salir
         </button>
       </aside>
-
       <main style={{ marginLeft: 220, flex: 1, minHeight: "100vh" }}>
         {children}
       </main>
@@ -66,6 +88,7 @@ export default function AppRouter() {
     <BrowserRouter>
       <Routes>
         <Route path="/login"         element={isAuth ? <Navigate to="/dashboard" replace /> : <Login />} />
+        <Route path="/pago-exitoso"  element={<PagoExitoso />} />
         <Route path="/dashboard"     element={<Guard><Dashboard /></Guard>} />
         <Route path="/suscripciones" element={<Guard><Suscripciones /></Guard>} />
         <Route path="/externos"      element={<Guard><Externos /></Guard>} />
