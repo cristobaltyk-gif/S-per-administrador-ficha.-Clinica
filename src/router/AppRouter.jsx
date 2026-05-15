@@ -9,31 +9,6 @@ import Profesionales from "../pages/Profesionales";
 import Externos from "../pages/Externos";
 import PagoExitoso from "../pages/PagoExitoso";
 
-function PagoExitoso() {
-  return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex",
-      alignItems: "center", justifyContent: "center", padding: 24 }}>
-      <div style={{ background: "#fff", borderRadius: 20, padding: 40, maxWidth: 420,
-        width: "100%", textAlign: "center", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
-        <div style={{ fontSize: 56, marginBottom: 16 }}>✅</div>
-        <h2 style={{ margin: "0 0 8px", color: "#166534", fontSize: 22, fontWeight: 800 }}>
-          ¡Pago confirmado!
-        </h2>
-        <p style={{ color: "#475569", fontSize: 14, marginBottom: 24 }}>
-          Tu suscripción ha sido activada. Recibirás un correo con tus credenciales de acceso al sistema clínico.
-        </p>
-        <div style={{ background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 12,
-          padding: "14px 20px", marginBottom: 24, fontSize: 13, color: "#166534" }}>
-          Revisa tu bandeja de entrada en <strong>clinica.icarticular.cl</strong>
-        </div>
-        <p style={{ fontSize: 12, color: "#94a3b8" }}>
-          ¿Tienes dudas? Escríbenos a contacto@icarticular.cl
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function Layout({ children }) {
   const { logout } = useAuth();
   const navStyle = ({ isActive }) => ({
@@ -43,14 +18,11 @@ function Layout({ children }) {
     color: isActive ? "#fff" : "#94a3b8",
     marginBottom: 4,
   });
-
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
-      <aside style={{
-        width: 220, background: "#0f172a", padding: "24px 12px",
+      <aside style={{ width: 220, background: "#0f172a", padding: "24px 12px",
         display: "flex", flexDirection: "column", flexShrink: 0,
-        position: "fixed", top: 0, left: 0, bottom: 0,
-      }}>
+        position: "fixed", top: 0, left: 0, bottom: 0 }}>
         <div style={{ marginBottom: 28, paddingLeft: 8 }}>
           <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>🏥 ICA</div>
           <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>Superadmin</div>
@@ -63,16 +35,13 @@ function Layout({ children }) {
           <NavLink to="/profesionales" style={navStyle}>🩺 Profesionales</NavLink>
           <NavLink to="/audit"         style={navStyle}>📋 Audit Log</NavLink>
         </nav>
-        <button onClick={logout}
-          style={{ background: "#1e293b", color: "#94a3b8", border: "none",
-            borderRadius: 10, padding: "10px 16px", fontSize: 13,
-            fontWeight: 600, textAlign: "left", cursor: "pointer" }}>
+        <button onClick={logout} style={{ background: "#1e293b", color: "#94a3b8", border: "none",
+          borderRadius: 10, padding: "10px 16px", fontSize: 13,
+          fontWeight: 600, textAlign: "left", cursor: "pointer" }}>
           ← Salir
         </button>
       </aside>
-      <main style={{ marginLeft: 220, flex: 1, minHeight: "100vh" }}>
-        {children}
-      </main>
+      <main style={{ marginLeft: 220, flex: 1, minHeight: "100vh" }}>{children}</main>
     </div>
   );
 }
