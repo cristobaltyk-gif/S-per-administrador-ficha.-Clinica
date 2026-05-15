@@ -7,6 +7,7 @@ import Usuarios from "../pages/Usuarios";
 import Audit from "../pages/Audit";
 import Profesionales from "../pages/Profesionales";
 import Externos from "../pages/Externos";
+import PagoExitoso from "../pages/PagoExitoso";
 
 function PagoExitoso() {
   return (
